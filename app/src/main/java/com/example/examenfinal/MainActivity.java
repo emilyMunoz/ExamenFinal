@@ -2,16 +2,28 @@ package com.example.examenfinal;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.lifecycle.ViewModelProviders;
+
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import static android.content.Intent.ACTION_VIEW;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final int NEW_ALUMN_ACTIVITY_REQUEST_CODE = 1;
+
+    private AlumnViewModel mAlumnViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +31,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
+        final AlumnListAdapter adapter = new AlumnListAdapter(this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        mAlumnViewModel = ViewModelProviders.of(this).get(AlumnViewModel.class);
+
+        mAlumnViewModel.getAllAlums().observe(this, new Observer<List<Alumno>>() {
+            @Override
+            public void onChanged(@Nullable final List<Alumno> alumnos) {
+                // Update the cached copy of the words in the adapter.
+                adapter.setAlumns(alumnos);
+            }
+        });
 
         FloatingActionButton fab = findViewById(R.id.fab);
 
